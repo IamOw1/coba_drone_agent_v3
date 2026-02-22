@@ -67,7 +67,7 @@ class DecisionMaker:
             },
             {
                 "name": "critical_battery",
-                "condition": lambda telemetry: telemetry.get("battery", 100) < 10,
+                "condition": lambda telemetry: telemetry.get("battery", 100) <= 10,
                 "action": {"command": "LAND", "reason": "Критический заряд батареи", "priority": "critical"},
                 "priority": 200
             },
@@ -191,7 +191,12 @@ class DecisionMaker:
         for rule in sorted_rules:
             try:
                 if rule["condition"](telemetry):
-                    return rule["action"]
+                    decision = dict(rule["action"])
+                    # Обратная совместимость: часть кода/тестов использует ключ `action`
+                    # вместо `command` для обозначения выбранной команды.
+                    if "command" in decision and "action" not in decision:
+                        decision["action"] = decision["command"]
+                    return decision
             except Exception as e:
                 logger.error(f"Ошибка проверки правила {rule['name']}: {e}")
         
