@@ -105,6 +105,23 @@ OPENAI_API_KEY=your_api_key_here
 
 ## 💻 Использование
 
+### 🐳 Запуск в Docker
+
+```bash
+# Сборка образа
+docker build -t coba-ai-drone .
+
+# Запуск API + Dashboard
+docker run --rm -p 8000:8000 -p 8501:8501 --env-file .env coba-ai-drone
+```
+
+Или через Docker Compose:
+
+```bash
+docker compose up --build
+```
+
+
 ### Запуск агента (интерактивный режим)
 
 ```bash

@@ -1,0 +1,10 @@
+services:
+  coba-drone-agent:
+    build: .
+    container_name: coba-drone-agent
+    ports:
+      - "8000:8000"
+      - "8501:8501"
+    env_file:
+      - .env
+    restart: unless-stopped
