@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COBA AI Drone Agent 2.0 - Панель управления</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #00d4ff;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header p {
+            color: #888;
+            margin-top: 10px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .status-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            min-width: 200px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .status-card h3 {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        
+        .status-value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        .status-online { color: #00ff88; }
+        .status-offline { color: #ff4444; }
+        .status-warning { color: #ffaa00; }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+        
+        .panel {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .panel h2 {
+            color: #00d4ff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .panel h2::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: #00d4ff;
+            border-radius: 2px;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #00d4ff, #7b2cbf);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0,212,255,0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #ff4444, #ff8800);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+        }
+        
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .telemetry-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        
+        .telemetry-item {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .telemetry-item .label {
+            color: #888;
+            font-size: 0.8em;
+            margin-bottom: 5px;
+        }
+        
+        .telemetry-item .value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #00d4ff;
+        }
+        
+        .log {
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        
+        .log-entry {
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .log-entry.info { color: #00d4ff; }
+        .log-entry.success { color: #00ff88; }
+        .log-entry.error { color: #ff4444; }
+        .log-entry.warning { color: #ffaa00; }
+        
+        .mission-map {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .drone-icon {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #00d4ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.5s;
+            box-shadow: 0 0 20px #00d4ff;
+        }
+        
+        .waypoint {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: #ffaa00;
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+        
+        .home-base {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: rgba(0,255,136,0.3);
+            border: 2px solid #00ff88;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .input-group {
+            margin: 10px 0;
+        }
+        
+        .input-group label {
+            display: block;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+            color: white;
+        }
+        
+        .demo-scenarios {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .scenario-card {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .scenario-card:hover {
+            border-color: #00d4ff;
+            transform: translateY(-3px);
+        }
+        
+        .scenario-card h4 {
+            color: #00d4ff;
+            margin-bottom: 10px;
+        }
+        
+        .scenario-card p {
+            color: #888;
+            font-size: 0.9em;
+        }
+        
+        .tool-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            margin: 5px 0;
+        }
+        
+        .tool-status .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .indicator.active { background: #00ff88; box-shadow: 0 0 10px #00ff88; }
+        .indicator.inactive { background: #ff4444; }
+        .indicator.standby { background: #ffaa00; }
+        
+        .connection-panel {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .connection-panel input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.5);
+            color: white;
+            margin-bottom: 10px;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .pulsing {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚁 COBA AI Drone Agent 2.0</h1>
+        <p>Интеллектуальная система управления дроном</p>
+    </div>
+    
+    <div class="container">
+        <!-- Подключение -->
+        <div class="connection-panel">
+            <h3 style="color: #00d4ff; margin-bottom: 15px;">🔌 Подключение к агенту</h3>
+            <input type="text" id="apiUrl" placeholder="http://localhost:8000" value="http://localhost:8000">
+            <div class="btn-group">
+                <button class="btn" onclick="connect()">Подключиться</button>
+                <button class="btn btn-success" onclick="initAgent()">Инициализировать агента</button>
+                <button class="btn btn-danger" onclick="shutdownAgent()">Выключить агента</button>
+            </div>
+            <div id="connectionStatus" style="margin-top: 10px; color: #888;">Не подключено</div>
+        </div>
+        
+        <!-- Статус -->
+        <div class="status-bar">
+            <div class="status-card">
+                <h3>Статус агента</h3>
+                <div class="status-value status-offline" id="agentStatus">OFFLINE</div>
+            </div>
+            <div class="status-card">
+                <h3>Батарея</h3>
+                <div class="status-value" id="battery">--%</div>
+            </div>
+            <div class="status-card">
+                <h3>Высота</h3>
+                <div class="status-value" id="altitude">-- м</div>
+            </div>
+            <div class="status-card">
+                <h3>Скорость</h3>
+                <div class="status-value" id="speed">-- м/с</div>
+            </div>
+            <div class="status-card">
+                <h3>Сигнал</h3>
+                <div class="status-value" id="signal">--%</div>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <!-- Телеметрия -->
+            <div class="panel">
+                <h2>📊 Телеметрия</h2>
+                <div class="telemetry-grid">
+                    <div class="telemetry-item">
+                        <div class="label">Позиция X</div>
+                        <div class="value" id="posX">0.0</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="label">Позиция Y</div>
+                        <div class="value" id="posY">0.0</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="label">Позиция Z</div>
+                        <div class="value" id="posZ">0.0</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="label">Roll</div>
+                        <div class="value" id="roll">0°</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="label">Pitch</div>
+                        <div class="value" id="pitch">0°</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <div class="label">Yaw</div>
+                        <div class="value" id="yaw">0°</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Управление -->
+            <div class="panel">
+                <h2>🎮 Управление</h2>
+                <div class="btn-group">
+                    <button class="btn btn-success" onclick="sendCommand('takeoff', {altitude: 15})">🛫 Взлет</button>
+                    <button class="btn btn-danger" onclick="sendCommand('land')">🛬 Посадка</button>
+                    <button class="btn" onclick="sendCommand('rtl')">🏠 RTL</button>
+                    <button class="btn" onclick="sendCommand('hover')">⏸️ Зависнуть</button>
+                </div>
+                <div class="input-group" style="margin-top: 15px;">
+                    <label>Навигация</label>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+                        <input type="number" id="navX" placeholder="X" value="50">
+                        <input type="number" id="navY" placeholder="Y" value="50">
+                        <input type="number" id="navZ" placeholder="Z" value="20">
+                    </div>
+                    <button class="btn" style="width: 100%; margin-top: 10px;" onclick="navigate()">🎯 Лететь в точку</button>
+                </div>
+            </div>
+            
+            <!-- Готовые сценарии -->
+            <div class="panel" style="grid-column: 1 / -1;">
+                <h2>🎬 Готовые сценарии (Демо)</h2>
+                <div class="demo-scenarios">
+                    <div class="scenario-card" onclick="runScenario('patrol')">
+                        <h4>🚔 Патрулирование</h4>
+                        <p>Автоматический облет периметра с фотофиксацией</p>
+                    </div>
+                    <div class="scenario-card" onclick="runScenario('search')">
+                        <h4>🔍 Поиск объекта</h4>
+                        <p>Поиск в заданной области с детекцией</p>
+                    </div>
+                    <div class="scenario-card" onclick="runScenario('survey')">
+                        <h4>📸 Обследование</h4>
+                        <p>Съемка территории змейкой с перекрытием</p>
+                    </div>
+                    <div class="scenario-card" onclick="runScenario('delivery')">
+                        <h4>📦 Доставка</h4>
+                        <p>Автоматическая доставка груза в точку</p>
+                    </div>
+                    <div class="scenario-card" onclick="runScenario('swarm')">
+                        <h4>🐝 Роевой полет</h4>
+                        <p>V-формация с перестроением при обнаружении</p>
+                    </div>
+                    <div class="scenario-card" onclick="runScenario('inspection')">
+                        <h4>🔧 Инспекция</h4>
+                        <p>Орбитальный облет объекта с 8 ракурсов</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Инструменты -->
+            <div class="panel">
+                <h2>🛠️ Инструменты</h2>
+                <div id="toolsList">
+                    <div class="tool-status">
+                        <div class="indicator active"></div>
+                        <span>Slom (Безопасность)</span>
+                    </div>
+                    <div class="tool-status">
+                        <div class="indicator active"></div>
+                        <span>MiFly (Управление)</span>
+                    </div>
+                    <div class="tool-status">
+                        <div class="indicator standby"></div>
+                        <span>Amorfus (Рой)</span>
+                    </div>
+                    <div class="tool-status">
+                        <div class="indicator active"></div>
+                        <span>GeoMap (Карты)</span>
+                    </div>
+                    <div class="tool-status">
+                        <div class="indicator active"></div>
+                        <span>ObjectDetection (YOLO)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Карта миссии -->
+            <div class="panel">
+                <h2>🗺️ Визуализация полета</h2>
+                <div class="mission-map" id="missionMap">
+                    <div class="home-base" style="left: 50%; top: 50%;">🏠</div>
+                    <div class="drone-icon" id="droneIcon" style="left: 50%; top: 50%;">🚁</div>
+                </div>
+            </div>
+            
+            <!-- Лог -->
+            <div class="panel" style="grid-column: 1 / -1;">
+                <h2>📝 Системный лог</h2>
+                <div class="log" id="systemLog">
+                    <div class="log-entry info">[СИСТЕМА] Ожидание подключения...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let apiUrl = 'http://localhost:8000';
+        let isConnected = false;
+        let telemetryInterval = null;
+        
+        function log(message, type = 'info') {
+            const logEl = document.getElementById('systemLog');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logEl.insertBefore(entry, logEl.firstChild);
+        }
+        
+        async function connect() {
+            apiUrl = document.getElementById('apiUrl').value || 'http://localhost:8000';
+            
+            try {
+                const response = await fetch(`${apiUrl}/health`);
+                if (response.ok) {
+                    isConnected = true;
+                    document.getElementById('connectionStatus').innerHTML = 
+                        '<span style="color: #00ff88;">✅ Подключено</span>';
+                    log('Подключение к API успешно', 'success');
+                    startTelemetryUpdate();
+                } else {
+                    throw new Error('API недоступен');
+                }
+            } catch (error) {
+                log(`Ошибка подключения: ${error.message}`, 'error');
+                document.getElementById('connectionStatus').innerHTML = 
+                    '<span style="color: #ff4444;">❌ Ошибка подключения</span>';
+            }
+        }
+        
+        async function initAgent() {
+            if (!isConnected) {
+                log('Сначала подключитесь к API', 'warning');
+                return;
+            }
+            
+            try {
+                log('Инициализация агента...', 'info');
+                const response = await fetch(`${apiUrl}/api/v1/agent/initialize`, {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('agentStatus').textContent = 'READY';
+                    document.getElementById('agentStatus').className = 'status-value status-online';
+                    log('Агент инициализирован успешно', 'success');
+                } else {
+                    log(`Ошибка инициализации: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                log(`Ошибка: ${error.message}`, 'error');
+            }
+        }
+        
+        async function shutdownAgent() {
+            if (!isConnected) return;
+            
+            try {
+                log('Выключение агента...', 'info');
+                await fetch(`${apiUrl}/api/v1/agent/shutdown`, { method: 'POST' });
+                document.getElementById('agentStatus').textContent = 'OFFLINE';
+                document.getElementById('agentStatus').className = 'status-value status-offline';
+                log('Агент выключен', 'success');
+            } catch (error) {
+                log(`Ошибка: ${error.message}`, 'error');
+            }
+        }
+        
+        async function sendCommand(command, params = {}) {
+            if (!isConnected) {
+                log('Сначала подключитесь к API', 'warning');
+                return;
+            }
+            
+            try {
+                log(`Отправка команды: ${command}...`, 'info');
+                const response = await fetch(`${apiUrl}/api/v1/command`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ command, params })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    log(`Команда ${command} выполнена`, 'success');
+                } else {
+                    log(`Ошибка: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                log(`Ошибка: ${error.message}`, 'error');
+            }
+        }
+        
+        function navigate() {
+            const x = document.getElementById('navX').value;
+            const y = document.getElementById('navY').value;
+            const z = document.getElementById('navZ').value;
+            sendCommand('goto', { x: parseFloat(x), y: parseFloat(y), z: parseFloat(z) });
+        }
+        
+        async function startTelemetryUpdate() {
+            if (telemetryInterval) clearInterval(telemetryInterval);
+            
+            telemetryInterval = setInterval(async () => {
+                if (!isConnected) return;
+                
+                try {
+                    const response = await fetch(`${apiUrl}/api/v1/telemetry`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        updateTelemetry(data.telemetry);
+                    }
+                } catch (error) {
+                    // Игнорируем ошибки опроса
+                }
+            }, 1000);
+        }
+        
+        function updateTelemetry(telemetry) {
+            if (!telemetry) return;
+            
+            // Батарея
+            if (telemetry.battery !== undefined) {
+                document.getElementById('battery').textContent = telemetry.battery.toFixed(1) + '%';
+            }
+            
+            // Позиция
+            if (telemetry.position) {
+                document.getElementById('posX').textContent = telemetry.position.x?.toFixed(1) || '0.0';
+                document.getElementById('posY').textContent = telemetry.position.y?.toFixed(1) || '0.0';
+                document.getElementById('posZ').textContent = telemetry.position.z?.toFixed(1) || '0.0';
+                document.getElementById('altitude').textContent = (telemetry.position.z?.toFixed(1) || '0') + ' м';
+                
+                // Обновление позиции дрона на карте
+                updateDronePosition(telemetry.position.x, telemetry.position.y);
+            }
+            
+            // Скорость
+            if (telemetry.velocity) {
+                const vx = telemetry.velocity.vx || 0;
+                const vy = telemetry.velocity.vy || 0;
+                const vz = telemetry.velocity.vz || 0;
+                const speed = Math.sqrt(vx*vx + vy*vy + vz*vz);
+                document.getElementById('speed').textContent = speed.toFixed(1) + ' м/с';
+            }
+            
+            // Сигнал
+            if (telemetry.signal_strength !== undefined) {
+                document.getElementById('signal').textContent = telemetry.signal_strength + '%';
+            }
+            
+            // Ориентация
+            if (telemetry.attitude) {
+                document.getElementById('roll').textContent = (telemetry.attitude.roll || 0).toFixed(1) + '°';
+                document.getElementById('pitch').textContent = (telemetry.attitude.pitch || 0).toFixed(1) + '°';
+                document.getElementById('yaw').textContent = (telemetry.attitude.yaw || 0).toFixed(1) + '°';
+            }
+        }
+        
+        function updateDronePosition(x, y) {
+            const drone = document.getElementById('droneIcon');
+            const map = document.getElementById('missionMap');
+            
+            // Масштабирование для визуализации
+            const scale = 2; // 1 м = 2 пикселя
+            const centerX = map.offsetWidth / 2;
+            const centerY = map.offsetHeight / 2;
+            
+            const pixelX = centerX + (x * scale);
+            const pixelY = centerY - (y * scale); // Y инвертирован
+            
+            drone.style.left = Math.max(0, Math.min(map.offsetWidth - 30, pixelX)) + 'px';
+            drone.style.top = Math.max(0, Math.min(map.offsetHeight - 30, pixelY)) + 'px';
+        }
+        
+        function runScenario(scenario) {
+            const scenarios = {
+                patrol: {
+                    name: 'Патрулирование',
+                    description: 'Дрон будет автоматически облетать заданный периметр'
+                },
+                search: {
+                    name: 'Поиск объекта',
+                    description: 'Поисковая операция с детекцией объектов'
+                },
+                survey: {
+                    name: 'Обследование',
+                    description: 'Съемка территории методом змейки'
+                },
+                delivery: {
+                    name: 'Доставка',
+                    description: 'Автоматическая доставка груза'
+                },
+                swarm: {
+                    name: 'Роевой полет',
+                    description: 'V-формация с перестроением'
+                },
+                inspection: {
+                    name: 'Инспекция',
+                    description: 'Орбитальный облет объекта'
+                }
+            };
+            
+            const s = scenarios[scenario];
+            log(`Запуск сценария: ${s.name}`, 'info');
+            log(s.description, 'info');
+            
+            // Имитация выполнения сценария
+            setTimeout(() => {
+                log(`Сценарий "${s.name}" выполнен!`, 'success');
+            }, 3000);
+        }
+        
+        // Автоподключение при загрузке
+        window.onload = () => {
+            log('Веб-интерфейс загружен', 'info');
+            log('Нажмите "Подключиться" для начала работы', 'info');
+        };
+    </script>
+</body>
+</html>

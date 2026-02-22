@@ -1,0 +1,6 @@
+"""
+API модули для интеграции
+"""
+from .rest_api import create_app
+
+__all__ = ['create_app']

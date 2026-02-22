@@ -1,0 +1,169 @@
+# Конфигурация COBA AI Drone Agent 2.0
+
+# Идентификатор агента
+agent_id: "drone_agent_001"
+
+# Режим работы
+simulation:
+  enabled: true
+  simulator: "airsim"
+  host: "localhost"
+  port: 41451
+
+# Параметры безопасности
+safety:
+  enabled: true
+  threshold: 0.8
+  battery_critical: 15
+  battery_low: 25
+  signal_critical: 20
+  signal_low: 40
+  wind_max: 15
+  temperature_max: 60
+  temperature_min: -10
+  obstacle_distance: 5
+  max_altitude: 120
+  max_distance: 1000
+  geofence:
+    enabled: true
+    center:
+      x: 0
+      y: 0
+      z: 0
+    radius: 500
+    max_altitude: 120
+
+# Параметры полета
+flight:
+  default_speed: 5.0
+  max_speed: 15.0
+  max_altitude: 120.0
+  takeoff_altitude: 10.0
+  landing_speed: 1.0
+
+# Параметры обучения
+learning:
+  enabled: true
+  algorithm: "dqn"
+  state_size: 24
+  action_size: 8
+  learning_rate: 0.001
+  gamma: 0.99
+  epsilon: 1.0
+  epsilon_min: 0.01
+  epsilon_decay: 0.995
+  batch_size: 64
+  buffer_size: 10000
+  target_update: 100
+  model_path: "data/models/dqn_model.pt"
+
+# Субагент GPT-4o
+sub_agent:
+  enabled: true
+  api_key: "${OPENAI_API_KEY}"
+  model: "gpt-4o"
+  base_url: "https://api.openai.com/v1"
+  monitoring_frequency: 5
+  backup_enabled: true
+  backup_interval: 3600
+  max_context_length: 8000
+
+# Роевой интеллект
+swarm:
+  enabled: false
+  size: 5
+  consensus_algorithm: "vicsek"
+  communication_range: 50.0
+  separation_weight: 1.5
+  alignment_weight: 1.0
+  cohesion_weight: 1.0
+
+# Картографирование
+mapping:
+  default_altitude: 50
+  overlap: 0.7
+  resolution: 0.01
+
+# Детекция объектов
+detection:
+  enabled: true
+  model_path: "yolov8n.pt"
+  confidence_threshold: 0.5
+  nms_threshold: 0.4
+  target_classes: []
+  save_detections: true
+
+# Точная посадка
+landing:
+  approach_altitude: 10
+  descent_speed: 0.5
+  final_approach_speed: 0.2
+  marker_search_radius: 20
+  precision_threshold: 0.5
+
+# Логистика
+logistics:
+  max_payload_weight: 2.0
+  max_payload_size:
+    x: 30
+    y: 30
+    z: 20
+  delivery_speed: 10.0
+  return_after_delivery: true
+
+# Автономный полет
+autonomous:
+  gps_denied_enabled: true
+  visual_navigation_enabled: true
+  adaptive_control_enabled: true
+
+# Инструменты
+# Динамическая загрузка инструментов
+tools:
+  - module: "amorfus"
+    class: "AmorfusTool"
+    enabled: false
+  - module: "slom"
+    class: "SlomTool"
+    enabled: true
+  - module: "mifly"
+    class: "MiFlyTool"
+    enabled: true
+  - module: "geospatial_mapping"
+    class: "GeoMapTool"
+    enabled: true
+  - module: "precision_landing"
+    class: "PrecisionLandingTool"
+    enabled: true
+  - module: "object_detection"
+    class: "ObjectDetectionTool"
+    enabled: true
+  - module: "mission_planner_tool"
+    class: "MissionPlannerTool"
+    enabled: true
+  - module: "logistics"
+    class: "LogisticsTool"
+    enabled: false
+  - module: "autonomous_flight"
+    class: "AutonomousFlightTool"
+    enabled: true
+  - module: "deployment_manager"
+    class: "DeploymentManagerTool"
+    enabled: false
+
+# API
+api:
+  host: "0.0.0.0"
+  port: 8000
+  cors_enabled: true
+
+# Дашборд
+dashboard:
+  enabled: true
+  port: 8501
+
+# Логирование
+logging:
+  level: "INFO"
+  file_enabled: true
+  console_enabled: true

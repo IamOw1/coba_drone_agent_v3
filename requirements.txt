@@ -1,0 +1,48 @@
+# COBA AI Drone Agent 2.0 - Зависимости
+
+# Ядро
+numpy>=1.24.0
+torch>=2.0.0
+pyyaml>=6.0
+python-dateutil>=2.8.0
+
+# API
+fastapi>=0.100.0
+uvicorn>=0.23.0
+pydantic>=2.0.0
+websockets>=11.0
+
+# Дашборд
+streamlit>=1.25.0
+plotly>=5.15.0
+
+# AI / ML
+openai>=1.0.0
+transformers>=4.30.0
+
+# Компьютерное зрение
+opencv-python>=4.8.0
+pillow>=10.0.0
+
+# География / Карты
+folium>=0.14.0
+geopy>=2.3.0
+
+# База данных
+
+# Логирование
+
+# Тестирование
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+
+# Разработка
+black>=23.0.0
+flake8>=6.0.0
+
+# Опционально: AirSim
+# airsim>=1.8.0
+
+# Опционально: MAVLink
+# pymavlink>=2.4.0
+# dronekit>=2.9.0
