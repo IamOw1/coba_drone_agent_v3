@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>COBA AI Drone Agent 2.0 - Панель управления</title>
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
     <style>
         * {
             margin: 0;
@@ -630,7 +634,7 @@
                 document.getElementById('posZ').textContent = telemetry.position.z?.toFixed(1) || '0.0';
                 document.getElementById('altitude').textContent = (telemetry.position.z?.toFixed(1) || '0') + ' м';
                 
-                // Обновление позиции дрона на карте
+                // Обновление ��озиции дрона на карте
                 updateDronePosition(telemetry.position.x, telemetry.position.y);
             }
             
