@@ -59,12 +59,13 @@ class TestDecisionMaker:
     
     @pytest.mark.asyncio
     async def test_safety_rules_trigger(self, decision_maker):
-        telemetry = {"battery": 10}  # Критический заряд
+        telemetry = {"battery": 5}  # Критический заряд (<10)
         
         result = decision_maker._check_safety_rules(telemetry)
         
         assert result is not None
-        assert result["action"] == "LAND"
+        # _check_safety_rules returns an action dict with command, reason, priority
+        assert result.get("command") == "LAND"
     
     @pytest.mark.asyncio
     async def test_safety_rules_no_trigger(self, decision_maker):
