@@ -1,4 +1,6 @@
 # COBA AI Drone Agent v3 (Full Version) - Complete Dependencies
+# ОБНОВЛЕНО: 23.02.2026 - Проверено и исправлено на Python 3.12.3
+# Все пакеты совместимы и установлены успешно
 
 # ========== ЯДРО И ОСНОВНЫЕ БИБЛИОТЕКИ ==========
 numpy>=1.24.0
@@ -38,7 +40,7 @@ matplotlib>=3.7.0
 folium>=0.14.0
 geopy>=2.3.0
 geopandas>=0.13.0
-openstreetmap>=0.4.0
+# openstreetmap>=0.4.0  # Недоступен в PyPI, используйте folium вместо этого
 
 # ========== БАЗА ДАННЫХ ==========
 sqlalchemy>=2.0.0
